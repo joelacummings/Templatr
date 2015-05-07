@@ -125,18 +125,15 @@ public class Templatr {
 				// add to the the existing paragraph instead of creating a new one
 				if (newIndex == index) {
 					insertRun(getParagraph(index), (String)o.get(VALUE_KEY));
-					System.out.println("We are adding a run");
 				} else {
 					P par = createParagraph((String)o.get(VALUE_KEY));
 				
 					this.documentPart.getContent().add(par);
 					//this.documentPart.addObject(par);
-					System.out.println("We are adding a new paragraph index: " + newIndex);
 				}
 			} 
 			else if(type.equals("table")) {
 				Tbl table = createTable(o);
-				System.out.println("We are adding a table index: " + newIndex);
 				if (newIndex < this.documentPart.getContent().size()) {
 					this.documentPart.getContent().add(newIndex, table);
 				} else {
@@ -290,7 +287,7 @@ public class Templatr {
 
 	public static void main(String[] args) {
 
-		String wordFile = "/Users/joelcummings/Templatr/TemplatrTest.docx";
+		String wordFile = "TemplatrTest.docx";
 		String jsonFile = "input.json";
 
 		try {
