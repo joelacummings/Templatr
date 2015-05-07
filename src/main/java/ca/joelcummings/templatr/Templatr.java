@@ -1,13 +1,21 @@
 package ca.joelcummings.templatr;
 
-import org.docx4j.TraversalUtil;
-import org.docx4j.XmlUtils;
-import org.docx4j.finders.ClassFinder;
-import org.docx4j.jaxb.XPathBinderAssociationIsPartialException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+
+import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
-import org.docx4j.wml.FldChar;
+import org.docx4j.wml.Drawing;
 import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
@@ -19,18 +27,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.JAXBElement;
-
 /**
  * @author Joel Cummings
  * @version 1.0
@@ -40,7 +36,6 @@ public class Templatr {
 	private String wordFile, jsonFile;
 	private JSONArray items;
 	private MainDocumentPart documentPart;
-	private final static String TEXT_PATH = "//w:t";
 	private WordprocessingMLPackage wordMLPackage;
 
 	// CONSTANTS
@@ -50,18 +45,25 @@ public class Templatr {
 	private final static String TEXT_KEY = "text";
 	private final static String TABLE_KEY = "table";
 	private final static String LIST_KEY = "list";
-	private final static String KEY_PLACEHOLDER = "placeholder";
+	private final static String IMAGE_KEY = "image";
+	private final static String ROW_KEY = "row";
+	private final static String COLUMN_KEY = "columns";
+	private final static String PLACEHOLDER_KEY = "placeholder";
 
-	public Templatr(String wordFile, String jsonFile) throws ParseException,
-			IOException, Docx4JException, JAXBException {
+	public Templatr(String wordFile, String jsonFile) throws Exception {
 		this.wordFile = wordFile;
 		this.jsonFile = jsonFile;
 
 		init();
 		replaceElements();
-		// addTableAtPosition();
 	}
 
+	/**
+	 * Initializes all required resources for the JSON and Docx4j
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws Docx4JException
+	 */
 	private void init() throws IOException, ParseException, Docx4JException {
 
 		JSONParser parser = new JSONParser();
@@ -76,14 +78,16 @@ public class Templatr {
 
 	}
 
-	private void replaceElements() throws JAXBException, Docx4JException {
-
-		HashMap<String, String> replacements = new HashMap<String, String>();
+	/**
+	 * Replaces all placeholder text within the document with the specified content in the JSON 
+	 * @throws Exception
+	 */
+	private void replaceElements() throws Exception {
 
 		for (Object o : items) {
 			if (o instanceof JSONObject) {
 				JSONObject obj = (JSONObject) o;
-
+				int index = this.findIndexOfText((String)obj.get(PLACEHOLDER_KEY));
 				String type = (String) obj.get(TYPE_KEY);
 
 				if (type.equals(TEXT_KEY)) {
@@ -91,15 +95,18 @@ public class Templatr {
 					// (String)obj.get(VALUE_KEY));
 
 					this.replaceTextInParagraph(
-							(String) obj.get(KEY_PLACEHOLDER),
+							(String) obj.get(PLACEHOLDER_KEY),
 							(String) obj.get(VALUE_KEY));
 				} else if (type.equals(LIST_KEY)) {
 					insertList(obj);
 				} else if (type.equals(TABLE_KEY)){
 					Tbl table = this.createTable(obj);
-					int index = this.findIndexOfText((String)obj.get(KEY_PLACEHOLDER));
 					insertObject(index, table);
 					documentPart.getContent().remove(index +1); // remove the old paragraph with the placeholder
+				} else if (type.equals(IMAGE_KEY)) {
+					P img = this.createImage((String)obj.get(VALUE_KEY));
+					insertObject(index, img);
+					documentPart.getContent().remove(index + 1);
 				}
 				
 
@@ -107,6 +114,11 @@ public class Templatr {
 		}
 	}
 
+	/**
+	 * Determines where the object is to be inserted given an index
+	 * @param index the location where it should go
+	 * @param obj the object to insert. 
+	 */
 	private void insertObject(int index, Object obj) {
 		if (index < this.documentPart.getContent().size()) {
 			documentPart.getContent().add(index, obj);
@@ -115,49 +127,95 @@ public class Templatr {
 		}
 	}
 	
-	private void insertList(JSONObject list) {
+	/**
+	 * Inserts a list given the list object from the JSON file
+	 * @param list list object
+	 * @throws Exception
+	 */
+	private void insertList(JSONObject list) throws Exception {
 		
-		int index = this.findIndexOfText((String)list.get(KEY_PLACEHOLDER));
+		int index = this.findIndexOfText((String)list.get(PLACEHOLDER_KEY));
 		int newIndex = index;
-		this.replaceTextInParagraph((String)list.get(KEY_PLACEHOLDER), "");
+		this.replaceTextInParagraph((String)list.get(PLACEHOLDER_KEY), "");
 		JSONArray elements = (JSONArray)list.get(VALUE_KEY);
 		
 		for (Object obj: elements) {
-			
+			// cast to JSON Object
+			if (! (obj instanceof JSONObject)) { 
+				throw new Exception("Exepected JSONObject inside array, got: " + obj.getClass());
+			}
 			JSONObject o = (JSONObject)obj;
-			
 			String type = (String)o.get(TYPE_KEY);
 			
 			if (type.equals(TEXT_KEY)) {
 				P par = createParagraph((String)o.get(VALUE_KEY));
 				// add to the the existing paragraph instead of creating a new one
-				if (newIndex == index) {
-					insertRun(getParagraph(index), (String)o.get(VALUE_KEY));
-				} else if (newIndex < documentPart.getContent().size()) {					
-					this.documentPart.getContent().add(newIndex, par);
-				} else {
-					documentPart.getContent().add(par);
-				}
-			} 
-			else if(type.equals(TABLE_KEY)) {
-				Tbl table = createTable(o);
-				if (newIndex < this.documentPart.getContent().size()) {
-					this.documentPart.getContent().add(newIndex, table);
-				} else {
-					this.documentPart.getContent().add(table);
-				}
+				this.insertObject(newIndex, par);
 				
+			} else if(type.equals(TABLE_KEY)) {
+				Tbl table = createTable(o);
+				this.insertObject(newIndex, createParagraph(""));
+				this.insertObject(++newIndex, table);
+				
+			} else if (type.equals(IMAGE_KEY)) {
+				P par = createImage((String)o.get(VALUE_KEY));
+				this.insertObject(newIndex, par);
+			}
+			
+			if (index == newIndex) {
+				documentPart.getContent().remove(index+1);
 			}
 			
 			newIndex++;
 			
-		}
-		
-		
-		
+		}	
 		
 	}
 	
+	/**
+	 * Creates an image object inside of a paragraph object given  a full file path
+	 * @param filename The full path to the desired image. 
+	 * @return paragraph object with the image insde of a run
+	 * @throws Exception
+	 */
+	public P createImage(String filename) throws Exception {
+		ObjectFactory factory = new ObjectFactory();
+		byte[] imgBytes;
+		File f = new File(filename);
+		String filenameHint = null, altText = null;
+		int id1 = 0, id2 = 1;
+		P par = factory.createP();
+		R run = factory.createR();
+		
+		InputStream is = new FileInputStream(f);
+		int fileLength = (int)f.length();
+		imgBytes = new byte[fileLength];
+		int offset = 0;
+		int numRead = 0;
+		// Read the image in
+		while (offset < imgBytes.length && (numRead=is.read(imgBytes, offset, imgBytes.length-offset)) >= 0) {
+			offset += numRead;
+		}
+		
+		is.close();
+
+		par.getContent().add(run);
+		BinaryPartAbstractImage img = BinaryPartAbstractImage.createImagePart(wordMLPackage, imgBytes);
+		
+		Inline inline = img.createImageInline(filenameHint, altText, id1, id2, false);
+		Drawing drawing = factory.createDrawing();
+		run.getContent().add(drawing);
+		drawing.getAnchorOrInline().add(inline);
+		
+		
+		return par;
+	}
+	
+	/**
+	 * Given an existing paragraph it inserts a run
+	 * @param par the paragraph in which to insert
+	 * @param text The String to insert into the run.
+	 */
 	private void insertRun(P par, String text) {
 		
 		ObjectFactory factory = new ObjectFactory();
@@ -170,30 +228,32 @@ public class Templatr {
 		
 	}
 	
+	/**
+	 * Creates a pargraph in the standard document font.
+	 * @param data the string to add into a paragraph.
+	 * @return The paragraph object with the text inserted.
+	 */
 	private P createParagraph(String data) {
 		
 		
 		ObjectFactory factory = new ObjectFactory();
 		P par = factory.createP();
-		
-		R run = factory.createR();
-		Text txt = factory.createText();
-		txt.setValue(data);
-		run.getContent().add(txt);
-		par.getContent().add(run);
+		insertRun(par, data);
 		
 		return par;
 		
 	}
 	
-	
-	
-
+	/**
+	 * Creates a Table object given a JSON object in the correct format.
+	 * @param tableObj The JSON object in which the table is represented
+	 * @return a standard word table
+	 */
 	private Tbl createTable(JSONObject tableObj) {
 		ObjectFactory factory = new ObjectFactory();
 		Tbl table = factory.createTbl();
 		JSONArray items = (JSONArray)tableObj.get(VALUE_KEY);
-		JSONObject head = (JSONObject)((JSONObject)items.get(0)).get("columns");
+		JSONObject head = (JSONObject)((JSONObject)items.get(0)).get(COLUMN_KEY);
 		Tr headRow = factory.createTr();
 		Tr row;
 		
@@ -214,7 +274,7 @@ public class Templatr {
 		
 		table.getContent().add(headRow);
 		
-		// remove it to loop through the body;
+		// remove the columns object to loop through the body of the table.
 		items.remove(0);
 		
 		for (Object obj: items) {
@@ -223,7 +283,7 @@ public class Templatr {
 			for (Object key: sortedKeySet) {
 				Tc cell = factory.createTc();
 				Object value = head.get(key);
-				String s = (String)((JSONObject)o.get("row")).get(value);
+				String s = (String)((JSONObject)o.get(ROW_KEY)).get(value);
 				Text t = factory.createText();
 				t.setValue(s);
 				cell.getContent().add(documentPart.createParagraphOfText(s));
@@ -236,9 +296,13 @@ public class Templatr {
 		
 	}
 	
-
+	/**
+	 * Given a String in the document it returns the index of the paragraph in which it resides.
+	 * @param toFind The String to search for (needle)
+	 * @return A positive index (or zero) if found, negative if not found. 
+	 */
 	private int findIndexOfText(String toFind) {
-		int index = 0;
+		int index = -1;
 
 		for (Object o : documentPart.getContent()) {
 
@@ -261,6 +325,11 @@ public class Templatr {
 		return index;
 	}
 
+	/**
+	 * Locates text in a paragraph within the document and replaces the text in the appropriate run
+	 * @param toFind String you are searching for (needle)
+	 * @param toReplace String to replace toFind. 
+	 */
 	private void replaceTextInParagraph(String toFind, String toReplace) {
 
 		int index = findIndexOfText(toFind);
@@ -283,15 +352,23 @@ public class Templatr {
 					}
 				}
 			}
-
 		}
-
 	}
 	
+	/**
+	 * Given an index of a paragraph object it returns the object
+	 * @param index of a paragraph object. 
+	 * @return
+	 */
 	private P getParagraph(int index) {
 		return (P)documentPart.getContent().get(index);
 	}
 
+	/**
+	 * Saves the document with replaced values to the given file path.
+	 * @param fileName the full path to where you want to store your file. 
+	 * @throws Docx4JException
+	 */
 	public void saveDocument(String fileName) throws Docx4JException {
 		wordMLPackage.save(new File(fileName));
 	}
@@ -318,6 +395,9 @@ public class Templatr {
 		} catch (JAXBException e) {
 			System.out.println("JAXB EXCEPTION: " + e.getMessage());
 			// e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
