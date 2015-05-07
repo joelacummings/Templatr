@@ -5,6 +5,11 @@
          "type":"text",
          "value":"13"
       },
+       {
+           "placeholder":"[:NUMBER_OF_SAVS:]",
+           "type":"text",
+           "value": "5"
+       },
       {  
          "placeholder":"[:LIST_OF_BMW_SAVS:]",
          "type":"table",
@@ -19,31 +24,31 @@
             {  
                "row":{  
                   "Model Name":"X1",
-                  "Description":"BMW's Smally Sporty Crossover"
+                  "Description":"The BMW X1 is a luxury compact crossover automobile produced by the German manufacturer BMW since 2009 and marketed worldwide in rear-wheel-drive (sDrive) and all-wheel-drive (xDrive) configurations."
                }
             }, 
             {
                "row": {
                   "Model Name": "X3",
-                  "Description": "BMW's Most Popular model"
+                  "Description": "The BMW X3 is an compact luxury crossover SUV [1] manufactured by German automaker BMW since 2003."
                }
             },
             {
                "row": {
                   "Model Name": "X4",
-                  "Description": "BMW's Small Coupe like SUV"
+                  "Description": "The BMW X4 is a compact luxury crossover SUV introduced in 2014, manufactured by the German automaker BMW at its United States factory in South Carolina."
                }
             },
             {
                "row": {
                   "Model Name": "X5",
-                  "Description": "BMW's Bread and Butter"
+                  "Description": "The BMW X5 is a midsize luxury SUV (Sport Utility Vehicle) (J-segment in Europe) produced by BMW."
                }
             },
             {
                "row": {
                   "Model Name": "X6",
-                  "Description": "BMW's Ugliest Piece of Shit!"
+                  "Description": "The BMW X6 is a mid-size luxury crossover by German automaker BMW"
                }
             }
          ]

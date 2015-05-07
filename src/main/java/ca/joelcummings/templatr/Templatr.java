@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -92,22 +93,28 @@ public class Templatr {
 					this.replaceTextInParagraph(
 							(String) obj.get(KEY_PLACEHOLDER),
 							(String) obj.get(VALUE_KEY));
-				}
-				
-				if (type.equals(LIST_KEY)) {
+				} else if (type.equals(LIST_KEY)) {
 					insertList(obj);
+				} else if (type.equals(TABLE_KEY)){
+					Tbl table = this.createTable(obj);
+					int index = this.findIndexOfText((String)obj.get(KEY_PLACEHOLDER));
+					insertObject(index, table);
+					documentPart.getContent().remove(index +1); // remove the old paragraph with the placeholder
 				}
 				
 
 			}
 		}
-
-		System.out.println(replacements);
-
-		//documentPart.variableReplace(replacements);
-
 	}
 
+	private void insertObject(int index, Object obj) {
+		if (index < this.documentPart.getContent().size()) {
+			documentPart.getContent().add(index, obj);
+		} else {
+			documentPart.getContent().add(obj);
+		}
+	}
+	
 	private void insertList(JSONObject list) {
 		
 		int index = this.findIndexOfText((String)list.get(KEY_PLACEHOLDER));
@@ -122,17 +129,17 @@ public class Templatr {
 			String type = (String)o.get(TYPE_KEY);
 			
 			if (type.equals(TEXT_KEY)) {
+				P par = createParagraph((String)o.get(VALUE_KEY));
 				// add to the the existing paragraph instead of creating a new one
 				if (newIndex == index) {
 					insertRun(getParagraph(index), (String)o.get(VALUE_KEY));
+				} else if (newIndex < documentPart.getContent().size()) {					
+					this.documentPart.getContent().add(newIndex, par);
 				} else {
-					P par = createParagraph((String)o.get(VALUE_KEY));
-				
-					this.documentPart.getContent().add(par);
-					//this.documentPart.addObject(par);
+					documentPart.getContent().add(par);
 				}
 			} 
-			else if(type.equals("table")) {
+			else if(type.equals(TABLE_KEY)) {
 				Tbl table = createTable(o);
 				if (newIndex < this.documentPart.getContent().size()) {
 					this.documentPart.getContent().add(newIndex, table);
@@ -190,8 +197,12 @@ public class Templatr {
 		Tr headRow = factory.createTr();
 		Tr row;
 		
-		//create header 
-		for (Object key: head.keySet()) {
+		// Since HashSets are not ordered we must sort it based on the order specified in the JSON
+		Object[] sortedKeySet = head.keySet().toArray();
+		Arrays.sort(sortedKeySet);
+		
+		//create header
+		for (Object key: sortedKeySet) {
 			
 			String s = (String)head.get(key);
 			Tc cell = factory.createTc();
@@ -209,7 +220,7 @@ public class Templatr {
 		for (Object obj: items) {
 			JSONObject o = (JSONObject)obj;
 			row = factory.createTr();
-			for (Object key: head.keySet()) {
+			for (Object key: sortedKeySet) {
 				Tc cell = factory.createTc();
 				Object value = head.get(key);
 				String s = (String)((JSONObject)o.get("row")).get(value);
