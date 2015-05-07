@@ -1,0 +1,113 @@
+{  
+   "items":[  
+      {  
+         "placeholder":"[:NUMBER_OF_BMW_MODELS:]",
+         "type":"text",
+         "value":"13"
+      },
+      {  
+         "placeholder":"[:LIST_OF_BMW_SAVS:]",
+         "type":"table",
+         "style": "blend",
+         "value":[  
+            {  
+               "columns":{  
+                  "1":"Model Name",
+                  "2":"Description"
+               }
+            },
+            {  
+               "row":{  
+                  "Model Name":"X1",
+                  "Description":"BMW's Smally Sporty Crossover"
+               }
+            }, 
+            {
+               "row": {
+                  "Model Name": "X3",
+                  "Description": "BMW's Most Popular model"
+               }
+            },
+            {
+               "row": {
+                  "Model Name": "X4",
+                  "Description": "BMW's Small Coupe like SUV"
+               }
+            },
+            {
+               "row": {
+                  "Model Name": "X5",
+                  "Description": "BMW's Bread and Butter"
+               }
+            },
+            {
+               "row": {
+                  "Model Name": "X6",
+                  "Description": "BMW's Ugliest Piece of Shit!"
+               }
+            }
+         ]
+      },
+      {  
+         "placeholder":"[:NUMBER_OF_SEDANS:]",
+         "type":"text",
+         "value":"4"
+      },
+      {
+         "placeholder": "[:FULL_VEHICLE_DESCRIPTION:]",
+         "type": "list",
+         "value": [
+            {
+               "type": "image",
+               "value": "M3.jpg"
+            },
+            {
+               "type": "text",
+               "value": "The 3.0 l M TwinPower Turbo straight six-cylinder engine combines the best of both worlds: high rev characteristics with up to 7,600 rpm and superior power with a maximum torque of 406 lb-ft. The 425 hp M engine accelerates from 0 to 100 km/h in just 4.1 seconds."
+            }
+            {
+               "type": "table",
+               "style": "invisible",
+               "value": [
+                  {
+                     "columns": {
+                        "1": "Engine",
+                        "2": "Spec"
+                     }
+                  },
+                  {
+                     "row": {
+                        "Engine": "Engine Type",
+                        "Spec": "Inline 6/ 24 Valves"
+                     }
+                  },
+                  {
+                     "row": {
+                        "Engine": "Displacement",
+                        "Spec": "2979"
+                     }
+                  },
+                  {
+                     "row": {
+                        "Engine": "Stroke/Bore",
+                        "Spec": "89.6/84.0"
+                     }
+                  },
+                  {
+                     "row": {
+                        "Engine": "Power (SAE hp @ rpm)",
+                        "Spec": "425 @ 5500 - 7300"
+                     }
+                  },
+                  {
+                     "row" : {
+                        "Engine": "Torque (lb-ft @ rpm)",
+                        "Spec": "406 @ 1850 - 5500"
+                     }
+                  }
+               ]
+            } 
+         ]
+      }
+   ]
+}
