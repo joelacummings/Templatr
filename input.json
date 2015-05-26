@@ -1,171 +1,157 @@
 {
-   "items":[
-      {
-         "placeholder":"[:NUMBER_OF_BMW_MODELS:]",
-         "type":"text",
-         "value":"13"
-      },
-      {
-         "placeholder":"[:NUMBER_OF_SAVS:]",
-         "type":"text",
-         "value":"5"
-      },
-       {
-           "placeholder": "[:M3_PICTURE:]",
-           "type": "image",
-           "value": "M3_2.jpg"
-       },
-      {
-         "placeholder":"[:LIST_OF_BMW_CARS:]",
-         "type":"table",
-         "value":[
-            {
-               "columns":{
-                  "1":"Model Name",
-                  "2":"Description"
-               }
-            },
-            {
-               "row":{
-                  "Model Name":"3 Series",
-                  "Description":"The BMW 3 Series is a compact executive car manufactured by the German automaker BMW since May 1975."
-               }
-            },
-            {
-               "row":{
-                  "Model Name":"2 Series",
-                  "Description":"The BMW 2 Series is a compact executive car produced by BMW."
-               }
-            },
-            {
-               "row":{
-                  "Model Name":"4 Series",
-                  "Description":"The BMW 4 Series (F32) is a compact executive coupé manufactured by the German automaker BMW."
-               }
-            },
-            {
-               "row":{
-                  "Model Name":"5 Series",
-                  "Description":"The BMW 5-Series is an executive/mid-size luxury car manufactured by German automaker BMW since 1972."
-               }
-            },
-            {
-               "row":{
-                  "Model Name":"6 Series",
-                  "Description":"The BMW 6 Series is a series of luxury grand tourers produced by the German automaker BMW."
-               }
-            },
-            {
-               "row":{
-                  "Model Name":"7 Series",
-                  "Description":"The BMW 7 Series is a line of full-size luxury vehicles produced by the German automaker BMW."
-               }
-            }
-         ]
-      },
-      {
-         "placeholder":"[:LIST_OF_BMW_SAVS:]",
-         "type":"table",
-         "style":"blend",
-         "value":[
-            {
-               "columns":{
-                  "1":"Model Name",
-                  "2":"Description"
-               }
-            },
-            {
-               "row":{
-                  "Model Name":"X1",
-                  "Description":"The BMW X1 is a luxury compact crossover automobile produced by the German manufacturer BMW since 2009 and marketed worldwide in rear-wheel-drive (sDrive) and all-wheel-drive (xDrive) configurations."
-               }
-            },
-            {
-               "row":{
-                  "Model Name":"X3",
-                  "Description":"The BMW X3 is an compact luxury crossover SUV [1] manufactured by German automaker BMW since 2003."
-               }
-            },
-            {
-               "row":{
-                  "Model Name":"X4",
-                  "Description":"The BMW X4 is a compact luxury crossover SUV introduced in 2014, manufactured by the German automaker BMW at its United States factory in South Carolina."
-               }
-            },
-            {
-               "row":{
-                  "Model Name":"X5",
-                  "Description":"The BMW X5 is a midsize luxury SUV (Sport Utility Vehicle) (J-segment in Europe) produced by BMW."
-               }
-            },
-            {
-               "row":{
-                  "Model Name":"X6",
-                  "Description":"The BMW X6 is a mid-size luxury crossover by German automaker BMW"
-               }
-            }
-         ]
-      },
-      {
-         "placeholder":"[:NUMBER_OF_SEDANS:]",
-         "type":"text",
-         "value":"4"
-      },
-      {
-         "placeholder":"[:FULL_VEHICLE_DESCRIPTION:]",
-         "type":"list",
-         "value":[
-            {
-               "type":"image",
-               "value":"M3.jpg"
-            },
-            {
-               "type":"text",
-               "value":"The 3.0 l M TwinPower Turbo straight six-cylinder engine combines the best of both worlds: high rev characteristics with up to 7,600 rpm and superior power with a maximum torque of 406 lb-ft. The 425 hp M engine accelerates from 0 to 100 km/h in just 4.1 seconds."
-            },
-            {
-               "type":"table",
-               "style":"invisible",
-               "value":[
-                  {
-                     "columns":{
-                        "1":"Engine",
-                        "2":"Spec"
-                     }
-                  },
-                  {
-                     "row":{
-                        "Engine":"Engine Type",
-                        "Spec":"Inline 6/ 24 Valves"
-                     }
-                  },
-                  {
-                     "row":{
-                        "Engine":"Displacement",
-                        "Spec":"2979"
-                     }
-                  },
-                  {
-                     "row":{
-                        "Engine":"Stroke/Bore",
-                        "Spec":"89.6/84.0"
-                     }
-                  },
-                  {
-                     "row":{
-                        "Engine":"Power (SAE hp @ rpm)",
-                        "Spec":"425 @ 5500 - 7300"
-                     }
-                  },
-                  {
-                     "row":{
-                        "Engine":"Torque (lb-ft @ rpm)",
-                        "Spec":"406 @ 1850 - 5500"
-                     }
-                  }
-               ]
-            }
-         ]
-      }
-   ]
+  "items": [
+    {
+      "placeholder": "[:TOTAL_NUMBER_OF_STUDENTS:]",
+      "type": "text",
+      "value": "115"
+    },
+    {
+      "placeholder": "[:CURRENT_MONTH:]",
+      "type": "text",
+      "value": "May"
+    },
+    {
+      "placeholder": "[:DAVIS_NUMBER_OF_STUDENTS:]",
+      "type": "text",
+      "value": "99"
+    },
+    {
+      "placeholder": "[:TRAFALGAR_NUMBER_OF_STUDENTS:]",
+      "type": "text",
+      "value": "16"
+    },
+    {
+      "placeholder": "[:MOST_POPULAR_FACULTY:]",
+      "type": "text",
+      "value": "Faculty of Applied Science and Technology"
+    },
+    {
+      "placeholder": "[:PERCENTAGE_OF_STUDENTS_AT_TOP_FACULTY:]",
+      "type": "text",
+      "value": "59"
+    },
+    {
+      "placeholder": "[:MOST_POPULAR_THREE_PROGRAMS:]",
+      "type": "text",
+      "value": "program 1, program 2, and program 3"
+    },
+    {
+      "placeholder": "[:TOP_SEMESTER:]",
+      "type": "text",
+      "value": "1"
+    },
+    {
+      "placeholder": "[:TOP_SEMESTER_PERCENTAGE:]",
+      "type": "text",
+      "value": "62"
+    },
+    {
+      "placeholder": "[:TOP_TWO_COURSES:]",
+      "type": "text",
+      "value": "PROG10082 and PROG24178"
+    },
+    {
+      "placeholder": "[:AVERAGE_NUMBER_OF_DROPIN_VISTS_PER_DAY:]",
+      "type": "text",
+      "value": "2.8"
+    },
+    {
+      "placeholder": "[:AVERAGE_NUMBER_OF_APPOINTMENTS_PER_DAY:]",
+      "type": "text",
+      "value": "9"
+    },
+    {
+      "placeholder": "[:AVERAGE_APPOINTMENT_TIME:]",
+      "type": "text",
+      "value": "48"
+    },
+    {
+      "placeholder": "[:AVERAGE_DROPIN_TIME:]",
+      "type": "text",
+      "value": "24"
+    },
+    {
+      "placeholder": "[:MOST_POPULAR_FACULTY_ABBREVIATED:]",
+      "type": "text",
+      "value": "FAST"
+    },
+    {
+      "placeholder": "[:SECOND_MOST_POPULAR_FACULTY:]",
+      "type": "text",
+      "value": "Second Most Popular Faculty"
+    },
+    {
+      "placeholder": "[:THIRD_MOST_POPULAR_FACULTY:]",
+      "type": "text",
+      "value": "Third Most Popular Faculty"
+    },
+    {
+      "placeholder": "[:TOTAL_TIME_TUTORED:]",
+      "type": "text",
+      "value": "123 Hours and 33 Minutes"
+    },
+    {
+      "placeholder": "[:MOST_POPULAR_TOPICS_TABLE:]",
+      "type": "table",
+      "value": [
+        {
+          "columns": {
+            "1": "Topic",
+            "2": "Number of Visits"
+          }
+        },
+        {
+          "row": {
+            "Topic": "GUI and Event Handling",
+            "Number of Visits": "121"
+          }
+        },
+        {
+          "row": {
+            "Topic": "Boolean Algebra",
+            "Number of Visits": "65"
+          }
+        }
+      ]
+    },
+    {
+      "placeholder": "[:MOST_POPULAR_COURSES_TABLE:]",
+      "type": "table",
+      "value": [
+        {
+          "columns": {
+            "1": "Course Code",
+            "2": "Course Title"
+          }
+        },
+        {
+          "row": {
+            "Course Code": "PROG10082",
+            "Course Title": "Object Oriented Programming 1"
+          }
+        },
+        {
+          "row": {
+            "Course Code": "PROG24178",
+            "Course Title": "Object Oriented Programming 2"
+          }
+        }
+      ]
+    },
+    {
+      "placeholder": "[:MOST_POPULAR_COURSE:]",
+      "type": "text",
+      "value": "PROG10082"
+    },
+    {
+      "placeholder": "[:SECOND_MOST_POPULAR_COURSE:]",
+      "type": "text",
+      "value": "PROG24178"
+    },
+    {
+      "placeholder": "[:THIRD_MOST_POPULAR_COURSE:]",
+      "type": "text",
+      "value": "PROG20799"
+    }
+  ]
 }

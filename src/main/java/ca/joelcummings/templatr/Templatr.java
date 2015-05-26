@@ -50,6 +50,14 @@ public class Templatr {
 	private final static String COLUMN_KEY = "columns";
 	private final static String PLACEHOLDER_KEY = "placeholder";
 
+	/**
+	 * Find and Replace contents of word file in memory.
+	 * Will not destroy current word document.
+	 * @param wordFile - A String of the path to your word file.
+	 * @param jsonFile - A String of the path to your json file.
+	 * @throws Exception thrown for various reasons including parsing issues, file not found, could not open.
+	 * JSON errors etc. Check the messages for more information.
+	 */
 	public Templatr(String wordFile, String jsonFile) throws Exception {
 		this.wordFile = wordFile;
 		this.jsonFile = jsonFile;
@@ -87,29 +95,36 @@ public class Templatr {
 		for (Object o : items) {
 			if (o instanceof JSONObject) {
 				JSONObject obj = (JSONObject) o;
-				int index = this.findIndexOfText((String)obj.get(PLACEHOLDER_KEY));
-				String type = (String) obj.get(TYPE_KEY);
+				int index = this.findIndexOfText((String) obj.get(PLACEHOLDER_KEY));
+				int previousIndex = -1;
+				// in a case where it could not replace the text, continue to avoid an infinte loop
+				while (index >= 0 && index != previousIndex)  {
 
-				if (type.equals(TEXT_KEY)) {
-					// replacements.put((String)obj.get(KEY_PLACEHOLDER),
-					// (String)obj.get(VALUE_KEY));
+					if (index < 0) { break; }
+					String type = (String) obj.get(TYPE_KEY);
+					if (type == null) {
+						continue;
+					}
+					if (type.equals(TEXT_KEY)) {
 
-					this.replaceTextInParagraph(
-							(String) obj.get(PLACEHOLDER_KEY),
-							(String) obj.get(VALUE_KEY));
-				} else if (type.equals(LIST_KEY)) {
-					insertList(obj);
-				} else if (type.equals(TABLE_KEY)){
-					Tbl table = this.createTable(obj);
-					insertObject(index, table);
-					documentPart.getContent().remove(index +1); // remove the old paragraph with the placeholder
-				} else if (type.equals(IMAGE_KEY)) {
-					P img = this.createImage((String)obj.get(VALUE_KEY));
-					insertObject(index, img);
-					documentPart.getContent().remove(index + 1);
+						this.replaceTextInParagraph(
+								(String) obj.get(PLACEHOLDER_KEY),
+								(String) obj.get(VALUE_KEY));
+					} else if (type.equals(LIST_KEY)) {
+						insertList(obj);
+					} else if (type.equals(TABLE_KEY)) {
+						Tbl table = this.createTable(obj);
+
+						insertObject(index, table);
+						documentPart.getContent().remove(index + 1); // remove the old paragraph with the placeholder
+					} else if (type.equals(IMAGE_KEY)) {
+						P img = this.createImage((String) obj.get(VALUE_KEY));
+						insertObject(index, img);
+						documentPart.getContent().remove(index + 1);
+					}
+					previousIndex = index;
+					index = this.findIndexOfText((String) obj.get(PLACEHOLDER_KEY));
 				}
-				
-
 			}
 		}
 	}
@@ -120,6 +135,7 @@ public class Templatr {
 	 * @param obj the object to insert. 
 	 */
 	private void insertObject(int index, Object obj) {
+		if (index < 0) { return; }
 		if (index < this.documentPart.getContent().size()) {
 			documentPart.getContent().add(index, obj);
 		} else {
@@ -142,7 +158,7 @@ public class Templatr {
 		for (Object obj: elements) {
 			// cast to JSON Object
 			if (! (obj instanceof JSONObject)) { 
-				throw new Exception("Exepected JSONObject inside array, got: " + obj.getClass());
+				throw new Exception("Expected JSONObject inside array, got: " + obj.getClass());
 			}
 			JSONObject o = (JSONObject)obj;
 			String type = (String)o.get(TYPE_KEY);
@@ -333,23 +349,27 @@ public class Templatr {
 	private void replaceTextInParagraph(String toFind, String toReplace) {
 
 		int index = findIndexOfText(toFind);
-
+		if (index < 0) { return; }
 		P par = (P) documentPart.getContent().get(index);
-
 		for (Object o : par.getContent()) {
 
 			if (o instanceof R) {
 				R run = (R) o;
 
 				for (Object inner : run.getContent()) {
+					if (! (inner instanceof JAXBElement)) { continue; }
+					if (((JAXBElement) inner).getValue() instanceof Text) {
 
-					Text t = (Text) ((JAXBElement) inner).getValue();
-					String s = t.getValue();
-					
-					if (s.contains(toFind)) {
-						s = s.replace(toFind, toReplace);						
-						t.setValue(s);
+
+						Text t = (Text) ((JAXBElement) inner).getValue();
+						String s = t.getValue();
+
+						if (s.contains(toFind)) {
+							s = s.replace(toFind, toReplace);
+							t.setValue(s);
+						}
 					}
+
 				}
 			}
 		}
